@@ -193,7 +193,7 @@ struct SemesterDetailView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
         )
-        .padding(.vertical, 0)
+        .padding(.vertical, -5)
     }
 }
 
