@@ -11,6 +11,53 @@ import Combine
 class SemesterViewModel: ObservableObject {
     @Published var semesters: [Semester] = []
     @Published var activeSemester: Semester? = nil
+    
+    private let semestersKey = "GradeMate.semesters"
+    private let activeSemesterIdKey = "GradeMate.activeSemesterId"
+    
+    init() {
+        load()
+    }
+    
+    // MARK: - Persistence
+
+    private func save() {
+        do {
+            let data = try JSONEncoder().encode(semesters)
+            UserDefaults.standard.set(data, forKey: semestersKey)
+
+            if let activeId = activeSemester?.id {
+                UserDefaults.standard.set(activeId.uuidString, forKey: activeSemesterIdKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: activeSemesterIdKey)
+            }
+        } catch {
+            print("Error saving semesters: \(error)")
+        }
+    }
+
+    private func load() {
+        let defaults = UserDefaults.standard
+
+        if let data = defaults.data(forKey: semestersKey) {
+            do {
+                let decoded = try JSONDecoder().decode([Semester].self, from: data)
+                self.semesters = decoded
+
+                if let idString = defaults.string(forKey: activeSemesterIdKey),
+                    let uuid = UUID(uuidString: idString) {
+                    self.activeSemester = decoded.first(where: { $0.id == uuid })
+                }
+            } catch {
+                print("Error loading semesters: \(error)")
+                self.semesters = []
+                self.activeSemester = nil
+            }
+        } else {
+            self.semesters = []
+            self.activeSemester = nil
+        }
+    }
 
     // MARK: - Semesters
 
@@ -21,6 +68,7 @@ class SemesterViewModel: ObservableObject {
         if activeSemester == nil {
             activeSemester = new
         }
+        save()
     }
     
     func removeSemester(_ semester: Semester) {
@@ -34,6 +82,8 @@ class SemesterViewModel: ObservableObject {
         if let active = activeSemester, active.id == semester.id {
             activeSemester = semesters.first
         }
+        
+        save()
     }
     
     @discardableResult
@@ -56,6 +106,7 @@ class SemesterViewModel: ObservableObject {
             activeSemester = semesters[index]
         }
 
+        save()
         return true
     }
 
@@ -68,6 +119,8 @@ class SemesterViewModel: ObservableObject {
 
         let newCourse = Course(name: name, shortCode: shortCode)
         semesters[index].courses.append(newCourse)
+        
+        save()
     }
     
     func removeCourses(at offsets: IndexSet, in semester: Semester) {
@@ -76,6 +129,8 @@ class SemesterViewModel: ObservableObject {
         }
 
         semesters[semesterIndex].courses.remove(atOffsets: offsets)
+        
+        save()
     }
 
     func moveCourses(from source: IndexSet, to destination: Int, in semester: Semester) {
@@ -84,6 +139,7 @@ class SemesterViewModel: ObservableObject {
         }
 
         semesters[semesterIndex].courses.move(fromOffsets: source, toOffset: destination)
+        save()
     }
 
     // MARK: - Components
@@ -91,8 +147,7 @@ class SemesterViewModel: ObservableObject {
     func totalWeight(
         for course: Course,
         in semester: Semester,
-        excluding component: GradeComponent? = nil
-    ) -> Double {
+        excluding component: GradeComponent? = nil ) -> Double {
         guard
             let semesterIndex = semesters.firstIndex(where: { $0.id == semester.id }),
             let courseIndex = semesters[semesterIndex].courses.firstIndex(where: { $0.id == course.id })
@@ -129,6 +184,7 @@ class SemesterViewModel: ObservableObject {
 
         let newComponent = GradeComponent(name: name, weight: weight, grade: grade)
         semesters[semesterIndex].courses[courseIndex].components.append(newComponent)
+        save()
     }
 
     func updateComponent(
@@ -152,6 +208,8 @@ class SemesterViewModel: ObservableObject {
         semesters[semesterIndex].courses[courseIndex].components[componentIndex].name = name
         semesters[semesterIndex].courses[courseIndex].components[componentIndex].weight = weight
         semesters[semesterIndex].courses[courseIndex].components[componentIndex].grade = grade
+        
+        save()
     }
 
     func removeComponents(
@@ -167,6 +225,7 @@ class SemesterViewModel: ObservableObject {
         }
 
         semesters[semesterIndex].courses[courseIndex].components.remove(atOffsets: offsets)
+        save()
     }
     
     // MARK: - Validation Helpers
