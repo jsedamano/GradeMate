@@ -84,8 +84,12 @@ struct AddComponentView: View {
         }
 
         let grade: Double?
-        if !gradeText.isEmpty, let g = Double(gradeText) {
+        if !gradeText.isEmpty, let g = Double(gradeText), (0...100).contains(g) {
             grade = g
+        } else if !gradeText.isEmpty {
+            validationMessage = "Grade must be between 0 and 100."
+            showValidationError = true
+            return
         } else {
             grade = nil
         }
