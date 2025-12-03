@@ -190,7 +190,10 @@ struct SemesterDetailView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .fill(Color(.systemBackground))
+                .fill(Color(
+                    light: .white,
+                    dark: .secondarySystemBackground
+                ))
                 .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
         )
         .padding(.vertical, -5)

@@ -10,7 +10,6 @@ import Testing
 
 // ----------------------------------------------------------------
 // Tests for the current grade calculation.
-// The tested code is in Course.swift
 // ----------------------------------------------------------------
 @MainActor
 struct CourseCurrentGradeTests {

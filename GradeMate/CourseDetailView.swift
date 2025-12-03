@@ -14,7 +14,8 @@ struct CourseDetailView: View {
 
     @State private var showAddComponent = false
     @State private var componentToEdit: GradeComponent? = nil
-
+    
+    @Environment(\.colorScheme) private var colorScheme
 
     private var currentCourse: Course? {
         viewModel.semesters
@@ -144,7 +145,7 @@ struct CourseDetailView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.blue.opacity(0.08))
+                .fill(Color.blue.opacity(colorScheme == .dark ? 0.30 : 0.12))
         )
     }
 }
