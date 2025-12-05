@@ -8,19 +8,28 @@
 import SwiftUI
 import Combine
 
+// ----------------------------------------------------------------
+// App-wide state and persistence for semesters, courses, and
+// components.
+// ----------------------------------------------------------------
 class SemesterViewModel: ObservableObject {
+    // All semesters managed by the app
     @Published var semesters: [Semester] = []
+    // Optional current/active semester
     @Published var activeSemester: Semester? = nil
     
+    // UserDefaults keys for persistence
     private let semestersKey = "GradeMate.semesters"
     private let activeSemesterIdKey = "GradeMate.activeSemesterId"
     
+    // Load persisted data on startup
     init() {
         load()
     }
     
     // MARK: - Persistence
 
+    // Persist semesters and active semester to UserDefaults
     private func save() {
         do {
             let data = try JSONEncoder().encode(semesters)
@@ -36,6 +45,7 @@ class SemesterViewModel: ObservableObject {
         }
     }
 
+    // Load semesters and active semester from UserDefaults
     private func load() {
         let defaults = UserDefaults.standard
 
@@ -61,6 +71,7 @@ class SemesterViewModel: ObservableObject {
 
     // MARK: - Semesters
 
+    // Create and persist a new semester (sets active if none)
     func addSemester(name: String) {
         let new = Semester(name: name)
         semesters.append(new)
@@ -71,6 +82,7 @@ class SemesterViewModel: ObservableObject {
         save()
     }
     
+    // Remove a semester and update the active one if needed
     func removeSemester(_ semester: Semester) {
         guard let index = semesters.firstIndex(where: { $0.id == semester.id }) else {
             return
@@ -86,6 +98,7 @@ class SemesterViewModel: ObservableObject {
         save()
     }
     
+    // Rename a semester; returns false if invalid or duplicate
     @discardableResult
     func renameSemester(_ semester: Semester, to newName: String) -> Bool {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -112,6 +125,7 @@ class SemesterViewModel: ObservableObject {
 
     // MARK: - Courses
 
+    // Add a course to a semester
     func addCourse(to semester: Semester, name: String, shortCode: String) {
         guard let index = semesters.firstIndex(where: { $0.id == semester.id }) else {
             return
@@ -123,6 +137,7 @@ class SemesterViewModel: ObservableObject {
         save()
     }
     
+    // Remove courses from a semester (supports swipe-to-delete)
     func removeCourses(at offsets: IndexSet, in semester: Semester) {
         guard let semesterIndex = semesters.firstIndex(where: { $0.id == semester.id }) else {
             return
@@ -133,6 +148,7 @@ class SemesterViewModel: ObservableObject {
         save()
     }
 
+    // Reorder courses within a semester
     func moveCourses(from source: IndexSet, to destination: Int, in semester: Semester) {
         guard let semesterIndex = semesters.firstIndex(where: { $0.id == semester.id }) else {
             return
@@ -144,6 +160,7 @@ class SemesterViewModel: ObservableObject {
 
     // MARK: - Components
 
+    // Sum of component weights for a course (optionally excluding one)
     func totalWeight(
         for course: Course,
         in semester: Semester,
@@ -168,6 +185,7 @@ class SemesterViewModel: ObservableObject {
             .reduce(0) { $0 + $1.weight }
     }
 
+    // Add a new grade component to a course
     func addComponent(
         to course: Course,
         in semester: Semester,
@@ -187,6 +205,7 @@ class SemesterViewModel: ObservableObject {
         save()
     }
 
+    // Update an existing grade component
     func updateComponent(
         _ component: GradeComponent,
         in course: Course,
@@ -212,6 +231,7 @@ class SemesterViewModel: ObservableObject {
         save()
     }
 
+    // Remove grade components from a course
     func removeComponents(
         at offsets: IndexSet,
         from course: Course,
@@ -230,6 +250,7 @@ class SemesterViewModel: ObservableObject {
     
     // MARK: - Validation Helpers
 
+    // Check for duplicate semester names (case/whitespace-insensitive)
     func semesterNameExists(_ name: String) -> Bool {
         let normalized = name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         return semesters.contains { semester in
@@ -238,6 +259,7 @@ class SemesterViewModel: ObservableObject {
         }
     }
 
+    // Check for duplicate course names within a semester (case/whitespace-insensitive)
     func courseNameExists(_ name: String, in semester: Semester) -> Bool {
         let normalized = name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
@@ -251,3 +273,4 @@ class SemesterViewModel: ObservableObject {
         }
     }
 }
+

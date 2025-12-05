@@ -7,10 +7,15 @@
 
 import SwiftUI
 
+// ----------------------------------------------------------------
+// App entry point.
+// ----------------------------------------------------------------
 @main
 struct GradeMateApp: App {
     var body: some Scene {
+        // Main window scene
         WindowGroup {
+            // Root view
             ContentView()
         }
     }

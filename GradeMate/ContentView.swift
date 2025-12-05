@@ -7,8 +7,14 @@
 
 import SwiftUI
 
+// ----------------------------------------------------------------
+// Root view: shows a welcome screen when there are no semesters,
+// or the semesters list.
+// ----------------------------------------------------------------
 struct ContentView: View {
+    // Controls presentation of the Add Semester sheet
     @State private var showAddSemester = false
+    // Shared view model for managing semesters
     @StateObject private var viewModel = SemesterViewModel()
 
     var body: some View {
@@ -25,7 +31,6 @@ struct ContentView: View {
                         .font(.body)
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.secondary)
-
                     Button {
                         showAddSemester = true
                     } label: {
@@ -50,12 +55,14 @@ struct ContentView: View {
                 SemesterListView(viewModel: viewModel)
             }
         }
+        // Presents the AddSemesterView when the user taps the button
         .sheet(isPresented: $showAddSemester) {
             AddSemesterView(viewModel: viewModel)
         }
     }
 }
 
+// Preview
 #Preview {
     ContentView()
 }

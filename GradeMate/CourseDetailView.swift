@@ -7,16 +7,25 @@
 
 import SwiftUI
 
+// ----------------------------------------------------------------
+// Detail view for a course: summary, components list, and add/edit
+// actions.
+// ----------------------------------------------------------------
 struct CourseDetailView: View {
+    // Data context
     @ObservedObject var viewModel: SemesterViewModel
     let semester: Semester
     let course: Course
 
+    // Controls Add Component sheet presentation
     @State private var showAddComponent = false
+    // Selected component to edit (presents edit sheet)
     @State private var componentToEdit: GradeComponent? = nil
     
+    // Used to adapt card styling to light/dark mode
     @Environment(\.colorScheme) private var colorScheme
 
+    // Live lookup of this course in the view model (keeps view in sync)
     private var currentCourse: Course? {
         viewModel.semesters
             .first(where: { $0.id == semester.id })?
@@ -26,12 +35,14 @@ struct CourseDetailView: View {
 
     var body: some View {
         VStack {
+            // Ensure the course still exists
             if let currentCourse = currentCourse {
                 // --- Summary card with current grade ---
                 gradeSummaryView(for: currentCourse)
                     .padding(.horizontal)
                     .padding(.top, 12)
 
+                // Empty state with call to action
                 if currentCourse.components.isEmpty {
                     VStack(spacing: 12) {
                         Text("No grade components yet")
@@ -42,7 +53,6 @@ struct CourseDetailView: View {
                             .font(.body)
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.secondary)
-
                         Button {
                             showAddComponent = true
                         } label: {
@@ -59,16 +69,16 @@ struct CourseDetailView: View {
                     }
                     .padding(.horizontal)
                     .padding(.top, 24)
-
                     Spacer()
                 } else {
+                    // Components list
                     List {
                         Section("Grade components") {
+                            // Tap a row to edit; swipe to delete
                             ForEach(currentCourse.components) { component in
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(component.name)
                                         .font(.headline)
-
                                     HStack {
                                         Text("Weight: \(component.weight, specifier: "%.1f")%")
                                         if let grade = component.grade {
@@ -101,6 +111,7 @@ struct CourseDetailView: View {
         }
         .navigationTitle(course.name)
         .navigationBarTitleDisplayMode(.inline)
+        // Add component button
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -110,9 +121,11 @@ struct CourseDetailView: View {
                 }
             }
         }
+        // Presents AddComponentView
         .sheet(isPresented: $showAddComponent) {
             AddComponentView(viewModel: viewModel, semester: semester, course: course)
         }
+        // Presents EditComponentView for the selected component
         .sheet(item: $componentToEdit) { component in
             EditComponentView(
                 viewModel: viewModel,
@@ -125,6 +138,7 @@ struct CourseDetailView: View {
 
     // MARK: - Helper views
 
+    // Summary card showing the current grade
     @ViewBuilder
     private func gradeSummaryView(for course: Course) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -132,6 +146,7 @@ struct CourseDetailView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
+            // Show grade if available; otherwise a placeholder
             if let grade = course.currentGrade {
                 Text("\(grade, specifier: "%.1f")%")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
@@ -143,6 +158,7 @@ struct CourseDetailView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
+        // Card background with adaptive opacity
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color.blue.opacity(colorScheme == .dark ? 0.30 : 0.12))
@@ -150,6 +166,7 @@ struct CourseDetailView: View {
     }
 }
 
+// Preview with sample data
 #Preview {
     let vm = SemesterViewModel()
     let sem = Semester(name: "Fall 2025")

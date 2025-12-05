@@ -7,23 +7,33 @@
 
 import SwiftUI
 
+// ----------------------------------------------------------------
+// Detail view for a semester: shows courses, add/rename/delete
+// actions, and navigation to course details.
+// ----------------------------------------------------------------
 struct SemesterDetailView: View {
+    // Data context
     @ObservedObject var viewModel: SemesterViewModel
+    
     let semester: Semester
 
+    // Used to dismiss after destructive actions
     @Environment(\.dismiss) private var dismiss
 
+    // Controls Add Course sheet presentation
     @State private var showAddCourse = false
 
-    // Course navigation
+    // Selected course for navigation
     @State private var selectedCourse: Course? = nil
+    // Triggers navigation to CourseDetailView
     @State private var navigateToCourse = false
 
-    // Semester options
+    // Controls Rename Semester sheet
     @State private var showRenameSemester = false
+    // Controls Delete confirmation alert
     @State private var showDeleteAlert = false
 
-    // Search for the actual version of the semester in viewModel
+    // Live lookup of this semester in the view model (keeps view in sync)
     private var currentSemester: Semester? {
         viewModel.semesters.first(where: { $0.id == semester.id })
     }
@@ -31,18 +41,17 @@ struct SemesterDetailView: View {
     var body: some View {
         VStack {
             if let currentSemester = currentSemester {
+                // Empty state with call to action
                 if currentSemester.courses.isEmpty {
                     // Message when there are no courses yet
                     VStack(spacing: 16) {
                         Text("No courses yet")
                             .font(.title3)
                             .fontWeight(.semibold)
-
                         Text("Start by adding your first course for this semester.")
                             .font(.body)
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.secondary)
-
                         Button {
                             showAddCourse = true
                         } label: {
@@ -61,6 +70,7 @@ struct SemesterDetailView: View {
 
                     Spacer()
                 } else {
+                    // Courses list
                     List {
                         Section {
                             ForEach(currentSemester.courses) { course in
@@ -93,6 +103,7 @@ struct SemesterDetailView: View {
         }
         .navigationTitle(semester.name)
         .navigationBarTitleDisplayMode(.inline)
+        // Editing controls, add button, and options menu
         .toolbar {
             // Show "Edit" just if there is at least one course
             if let currentSemester = currentSemester,
@@ -127,12 +138,15 @@ struct SemesterDetailView: View {
                 }
             }
         }
+        // Presents AddCourseView
         .sheet(isPresented: $showAddCourse) {
             AddCourseView(viewModel: viewModel, semester: semester)
         }
+        // Presents RenameSemesterView
         .sheet(isPresented: $showRenameSemester) {
             RenameSemesterView(viewModel: viewModel, semester: semester)
         }
+        // Delete confirmation alert
         .alert("Delete semester?", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) {}
 
@@ -143,7 +157,7 @@ struct SemesterDetailView: View {
         } message: {
             Text("This will remove the semester and all its courses. This action cannot be undone.")
         }
-        // Modern navigation
+        // Programmatic navigation to CourseDetailView
         .navigationDestination(isPresented: $navigateToCourse) {
             if let selectedCourse {
                 CourseDetailView(
@@ -159,6 +173,7 @@ struct SemesterDetailView: View {
 
     // MARK: - Helper views
 
+    // Card view for a course row (shows short code, name, and current grade)
     private func courseCard(for course: Course) -> some View {
         // Format grade as text
         let gradeText: String = {
