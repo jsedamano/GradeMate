@@ -49,5 +49,17 @@ struct SemesterListView: View {
 
 // Preview
 #Preview {
-    SemesterListView(viewModel: SemesterViewModel())
+    let vm = SemesterViewModel()
+    vm.semesters = [
+        Semester(name: "Fall 2025", courses: [
+            Course(name: "Calculus I", shortCode: "MATH 1225"),
+            Course(name: "Intro to CS", shortCode: "CS 1114")
+        ]),
+        Semester(name: "Spring 2026", courses: [
+            Course(name: "Physics I", shortCode: "PHYS 2305")
+        ])
+    ]
+    return NavigationStack {
+        SemesterListView(viewModel: vm)
+    }
 }

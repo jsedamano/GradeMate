@@ -30,6 +30,26 @@ final class GradeMateUITests: XCTestCase {
 
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
+    
+    @MainActor
+    func testSemestersScreen_hasTitleAndAddButton() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        // Check that the main title is visible
+        let title = app.staticTexts["Your Semesters"]
+        XCTAssertTrue(
+            title.waitForExistence(timeout: 3),
+            "Expected 'Your Semesters' title to be visible on launch"
+        )
+
+        // Check that the + button exists (default label is "Add")
+        let addButton = app.buttons["Add"]
+        XCTAssertTrue(
+            addButton.exists,
+            "Expected an 'Add' button (the + in the top-right corner) to exist"
+        )
+    }
 
     @MainActor
     func testLaunchPerformance() throws {

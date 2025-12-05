@@ -169,9 +169,9 @@ struct CourseDetailView: View {
 // Preview with sample data
 #Preview {
     let vm = SemesterViewModel()
-    let sem = Semester(name: "Fall 2025")
     let course = Course(name: "Calculus I", shortCode: "MATH 1225")
-    vm.semesters = [Semester(name: sem.name, courses: [course])]
+    let sem = Semester(name: "Fall 2025", courses: [course])
+    vm.semesters = [sem]
     return NavigationStack {
         CourseDetailView(viewModel: vm, semester: sem, course: course)
     }
