@@ -24,6 +24,14 @@ struct CourseDetailView: View {
     
     // Used to adapt card styling to light/dark mode
     @Environment(\.colorScheme) private var colorScheme
+    
+    // Dismiss this view (used after deleting the course)
+    @Environment(\.dismiss) private var dismiss
+
+    // Controls Rename Course sheet
+    @State private var showRenameCourse = false
+    // Controls Delete confirmation alert for this course
+    @State private var showDeleteCourseAlert = false
 
     // Live lookup of this course in the view model (keeps view in sync)
     private var currentCourse: Course? {
@@ -109,15 +117,31 @@ struct CourseDetailView: View {
                 Spacer()
             }
         }
-        .navigationTitle(course.name)
+        .navigationTitle(currentCourse?.name ?? course.name)
         .navigationBarTitleDisplayMode(.inline)
-        // Add component button
+        // Add component button + course options menu
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
                     showAddComponent = true
                 } label: {
                     Image(systemName: "plus")
+                }
+
+                Menu {
+                    Button {
+                        showRenameCourse = true
+                    } label: {
+                        Label("Rename course", systemImage: "pencil")
+                    }
+
+                    Button(role: .destructive) {
+                        showDeleteCourseAlert = true
+                    } label: {
+                        Label("Delete course", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
                 }
             }
         }
@@ -125,14 +149,20 @@ struct CourseDetailView: View {
         .sheet(isPresented: $showAddComponent) {
             AddComponentView(viewModel: viewModel, semester: semester, course: course)
         }
-        // Presents EditComponentView for the selected component
-        .sheet(item: $componentToEdit) { component in
-            EditComponentView(
-                viewModel: viewModel,
-                semester: semester,
-                course: course,
-                component: component
-            )
+        // Presents RenameCourseView
+        .sheet(isPresented: $showRenameCourse) {
+            RenameCourseView(viewModel: viewModel, semester: semester, course: course)
+        }
+        // Delete confirmation alert for this course
+        .alert("Delete course?", isPresented: $showDeleteCourseAlert) {
+            Button("Cancel", role: .cancel) { }
+            
+            Button("Delete", role: .destructive) {
+                viewModel.removeCourse(course, from: semester)
+                dismiss()
+            }
+        } message: {
+            Text("This will remove the course and all its components. This action cannot be undone.")
         }
     }
 

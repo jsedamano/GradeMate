@@ -157,6 +157,73 @@ class SemesterViewModel: ObservableObject {
         semesters[semesterIndex].courses.move(fromOffsets: source, toOffset: destination)
         save()
     }
+    
+    // Rename a course inside a given semester
+    func renameCourse(_ course: Course, in semester: Semester, to newName: String) -> Bool {
+        let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+
+        // Avoid duplicates in this semester (case/whitespace-insensitive),
+        // but allow renaming to the same name.
+        if courseNameExists(trimmed, in: semester),
+           course.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() != trimmed.lowercased() {
+            return false
+        }
+
+        guard
+            let semesterIndex = semesters.firstIndex(where: { $0.id == semester.id }),
+            let courseIndex = semesters[semesterIndex].courses.firstIndex(where: { $0.id == course.id })
+        else {
+            return false
+        }
+
+        semesters[semesterIndex].courses[courseIndex].name = trimmed
+        save()
+        return true
+    }
+
+    // Remove a single course from a semester by identity
+    func removeCourse(_ course: Course, from semester: Semester) {
+        guard
+            let semesterIndex = semesters.firstIndex(where: { $0.id == semester.id }),
+            let courseIndex = semesters[semesterIndex].courses.firstIndex(where: { $0.id == course.id })
+        else {
+            return
+        }
+
+        semesters[semesterIndex].courses.remove(at: courseIndex)
+        save()
+    }
+    
+    // Update course name and short code inside a given semester
+    func updateCourse(
+        _ course: Course,
+        in semester: Semester,
+        newName: String,
+        newShortCode: String
+    ) {
+        guard
+            let semesterIndex = semesters.firstIndex(where: { $0.id == semester.id }),
+            let courseIndex = semesters[semesterIndex].courses.firstIndex(where: { $0.id == course.id })
+        else {
+            return
+        }
+
+        let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedCode = newShortCode.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Name is required and already validated in the view,
+        // but we guard again just in case.
+        guard !trimmedName.isEmpty else { return }
+
+        // If the code is empty, fall back to the name (same behavior as AddCourseView)
+        let effectiveShortCode = trimmedCode.isEmpty ? trimmedName : trimmedCode
+
+        semesters[semesterIndex].courses[courseIndex].name = trimmedName
+        semesters[semesterIndex].courses[courseIndex].shortCode = effectiveShortCode
+
+        save()
+    }
 
     // MARK: - Components
 
@@ -273,4 +340,3 @@ class SemesterViewModel: ObservableObject {
         }
     }
 }
-
