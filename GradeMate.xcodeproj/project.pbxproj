@@ -50,6 +50,11 @@
 			path = GradeMateUITests;
 			sourceTree = "<group>";
 		};
+		B971E9C72EE3D4E50070E604 /* Report */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Report;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +85,7 @@
 		B93A36502ED188EF0080924F = {
 			isa = PBXGroup;
 			children = (
+				B971E9C72EE3D4E50070E604 /* Report */,
 				B944325F2EE3BBFB00FCD86E /* README.md */,
 				B93A365B2ED188EF0080924F /* GradeMate */,
 				B93A36692ED188F00080924F /* GradeMateTests */,
@@ -115,6 +121,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				B93A365B2ED188EF0080924F /* GradeMate */,
+				B971E9C72EE3D4E50070E604 /* Report */,
 			);
 			name = GradeMate;
 			packageProductDependencies = (

@@ -16,7 +16,7 @@ Whether you're juggling multiple courses or tracking your GPA across several sem
 
 ## 📹 Video Demonstration
 
-[![GradeMate Demo Video](https://img.shields.io/badge/Watch-Demo%20Video-blue?style=for-the-badge)](VIDEO_LINK_HERE)
+[![GradeMate Demo Video](https://img.shields.io/badge/Watch-Demo%20Video-blue?style=for-the-badge)](https://youtu.be/DWr136ybzbs)
 
 ## 🎯 Key Features
 
