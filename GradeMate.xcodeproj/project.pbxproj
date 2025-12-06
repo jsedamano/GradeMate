@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B94432602EE3BC0000FCD86E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B944325F2EE3BBFB00FCD86E /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		B93A36672ED188F00080924F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		B93A36592ED188EF0080924F /* GradeMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GradeMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B93A36662ED188F00080924F /* GradeMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GradeMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B93A36702ED188F00080924F /* GradeMateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GradeMateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B944325F2EE3BBFB00FCD86E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		B93A36502ED188EF0080924F = {
 			isa = PBXGroup;
 			children = (
+				B944325F2EE3BBFB00FCD86E /* README.md */,
 				B93A365B2ED188EF0080924F /* GradeMate */,
 				B93A36692ED188F00080924F /* GradeMateTests */,
 				B93A36732ED188F00080924F /* GradeMateUITests */,
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B94432602EE3BC0000FCD86E /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
